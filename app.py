@@ -3,6 +3,22 @@ import pandas as pd
 
 st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
+# --- ĐOẠN CSS TÙY CHỈNH: PHÓNG TO NÚT MỞ MENU Ở GÓC TRÁI ---
+st.markdown("""
+    <style>
+        /* Phóng to nút mở menu (sidebar toggle) và làm nổi bật */
+        [data-testid="collapsedControl"] {
+            transform: scale(1.6);
+            top: 15px;
+            left: 15px;
+            background-color: #fefae0;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("🛒 TIỆM BÁNH NHÀ DIEM")
 
 # --- THANH BÊN (SIDEBAR) ĐỂ NHẬP LIỆU ---
@@ -52,7 +68,7 @@ st.markdown("---")
 st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 
 if not data_rows:
-    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị!")
+    st.info("👈 Hãy bấm vào nút mở menu ở góc trên bên trái để nhập số lượng bánh nhé!")
 else:
     # Ngày lập hóa đơn nằm sát ngay phía trên bảng
     st.markdown(f"<p style='margin-bottom: 5px; color: #555;'>📅 Ngày lập hóa đơn: <b>{ngay}</b></p>", unsafe_allow_html=True)
@@ -65,6 +81,5 @@ else:
         "Thành tiền": f"{tong_cong:,.0f} VNĐ"
     })
     
-    # Sử dụng bảng chuẩn của Streamlit (bảo đảm sạch sẽ, hiển thị đẹp, không bao giờ lỗi code)
     df = pd.DataFrame(data_rows)
     st.table(df)
