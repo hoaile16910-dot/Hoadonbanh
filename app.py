@@ -48,17 +48,45 @@ st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 if not hoa_don_chi_tiet:
     st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị!")
 else:
-    # Gom ngày tháng xuống sát ngay phía trên bảng cho gọn gàng
+    # Ngày lập hóa đơn nằm sát ngay phía trên bảng
     st.markdown(f"<p style='margin-bottom: 5px; color: #555;'>📅 Ngày lập hóa đơn: <b>{ngay}</b></p>", unsafe_allow_html=True)
     
-    # Tạo bảng ngang chuẩn Markdown có sẵn dòng tổng cộng gộp phía dưới
-    markdown_table = "| Tên bánh | SL (kg) | Đơn giá | Thành tiền |\n"
-    markdown_table += "| :--- | :---: | ---: | ---: |\n"
+    # Dùng bảng HTML có khóa chống rớt dòng chữ (white-space: nowrap)
+    html_table = """
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; background-color: #fff; border: 1px solid #ddd;">
+            <thead>
+                <tr style="background-color: #bc6c25; color: white; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Tên bánh</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center; white-space: nowrap;">SL (kg)</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right; white-space: nowrap;">Đơn giá</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right; white-space: nowrap;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+    """
     
     for ten, sl, dg, tt in hoa_don_chi_tiet:
-        markdown_table += f"| **{ten}** | {sl} | {dg:,.0f} đ | {tt:,.0f} đ |\n"
+        html_table += f"""
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #333;">{ten}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #555; white-space: nowrap;">{sl}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #555; white-space: nowrap;">{dg:,.0f} đ</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #283618; white-space: nowrap;">{tt:,.0f} đ</td>
+                </tr>
+        """
         
-    # Gộp hàng tổng cộng vào ngay trong bảng
-    markdown_table += f"| **TỔNG CỘNG** | - | - | **{tong_cong:,.0f} VNĐ** |"
-        
-    st.markdown(markdown_table)
+    # Gộp hàng tổng cộng vào ngay dòng cuối cùng của bảng
+    html_table += f"""
+                <tr style="background-color: #fefae0; font-weight: bold;">
+                    <td style="padding: 10px; border: 1px solid #ddd; color: #bc6c25;">TỔNG CỘNG</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">-</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">-</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #9b2226; white-space: nowrap;">{tong_cong:,.0f} VNĐ</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    """
+    
+    st.markdown(html_table, unsafe_allow_html=True)
