@@ -4,7 +4,7 @@ import io
 
 st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
-st.title("🛒 TIỆM BÁNH NHÀ DIEM - XUẤT ẢNH HÓA ĐƠN")
+st.title("🛒 TIỆM BÁNH NHÀ DIEM")
 
 # --- THANH BÊN (SIDEBAR) ĐỂ NHẬP LIỆU ---
 st.sidebar.header("📝 Nhập thông tin đơn hàng")
@@ -47,61 +47,59 @@ for ten, sl, dg in danh_sach:
 st.markdown("---")
 
 if not hoa_don_chi_tiet:
-    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh.")
+    st.info("👈 Hãy bấm mở menu bên cạnh để nhập số lượng bánh, hóa đơn sắc nét sẽ xuất hiện ngay!")
 else:
-    st.markdown("### 📸 TẠO VÀ TẢI ẢNH HÓA ĐƠN")
+    st.markdown("### 📸 ẢNH HÓA ĐƠN SẮC NÉT")
     
-    # Hàm tự động vẽ ảnh hóa đơn
+    # Hàm tự động vẽ ảnh hóa đơn độ phân giải cao, chữ to rõ
     def tao_anh_hoa_don():
-        # Kích thước khung ảnh
-        img_width = 600
-        img_height = 250 + (len(hoa_don_chi_tiet) * 50)
+        img_width = 700
+        img_height = 300 + (len(hoa_don_chi_tiet) * 70)
         
-        # Tạo ảnh nền màu kem sáng
+        # Tạo ảnh nền màu kem sáng sạch sẽ
         img = Image.new('RGB', (img_width, img_height), color='#fdfbf7')
         draw = ImageDraw.Draw(img)
         
-        # Sử dụng font mặc định hệ thống (hoặc có thể dùng font chữ cơ bản)
+        # Dùng font mặc định (hoặc font hệ thống)
         try:
-            font_title = ImageFont.truetype("arial.ttf", 22)
-            font_bold = ImageFont.truetype("arial.ttf", 16)
-            font_normal = ImageFont.truetype("arial.ttf", 15)
+            font_title = ImageFont.truetype("arial.ttf", 28)
+            font_bold = ImageFont.truetype("arial.ttf", 20)
+            font_normal = ImageFont.truetype("arial.ttf", 18)
         except:
             font_title = ImageFont.load_default()
             font_bold = ImageFont.load_default()
             font_normal = ImageFont.load_default()
 
-        # Vẽ nội dung lên ảnh
-        draw.text((200, 30), "TIỆM BÁNH NHÀ DIEM", fill="#bc6c25", font=font_title)
-        draw.text((230, 65), f"Ngày: {ngay}", fill="#666666", font=font_normal)
-        draw.line([(30, 95), (570, 95)], fill="#d4a373", width=2)
+        # Vẽ tiêu đề và thông tin
+        draw.text((200, 35), "TIỆM BÁNH NHÀ DIEM", fill="#bc6c25", font=font_title)
+        draw.text((270, 75), f"Ngày: {ngay}", fill="#555555", font=font_normal)
+        draw.line([(40, 110), (660, 110)], fill="#d4a373", width=3)
         
-        y = 120
+        y = 140
         stt = 1
         for ten, sl, dg, tt in hoa_don_chi_tiet:
-            draw.text((40, y), f"{stt}. {ten}", fill="#222222", font=font_bold)
-            draw.text((40, y + 22), f"   SL: {sl} kg x {dg:,.0f}đ", fill="#666666", font=font_normal)
-            draw.text((420, y + 10), f"{tt:,.0f} đ", fill="#283618", font=font_bold)
-            y += 55
+            draw.text((50, y), f"{stt}. {ten}", fill="#111111", font=font_bold)
+            draw.text((50, y + 28), f"   Số lượng: {sl} kg  x  {dg:,.0f} đ", fill="#555555", font=font_normal)
+            draw.text((470, y + 12), f"{tt:,.0f} đ", fill="#283618", font=font_bold)
+            y += 75
             stt += 1
             
-        draw.line([(30, y + 10), (570, y + 10)], fill="#d4a373", width=2)
-        draw.text((40, y + 30), "TỔNG CỘNG:", fill="#000000", font=font_title)
-        draw.text((380, y + 30), f"{tong_cong:,.0f} VNĐ", fill="#9b2226", font=font_title)
+        draw.line([(40, y + 10), (660, y + 10)], fill="#d4a373", width=3)
+        draw.text((50, y + 35), "TỔNG CỘNG:", fill="#000000", font=font_title)
+        draw.text((430, y + 35), f"{tong_cong:,.0f} VNĐ", fill="#9b2226", font=font_title)
         
-        draw.text((180, y + 85), "Cảm ơn quý khách và hẹn gặp lại! ❤️", fill="#888888", font=font_normal)
+        draw.text((215, y + 105), "Cảm ơn quý khách và hẹn gặp lại! ❤️", fill="#777777", font=font_normal)
         
-        # Lưu vào bộ nhớ đệm dạng bytes để tải về
         buf = io.BytesIO()
         img.save(buf, format="PNG")
-        byte_im = buf.getvalue()
-        return byte_im
+        return buf.getvalue()
 
-    # Nút bấm tạo ảnh và tải về
     anh_bytes = tao_anh_hoa_don()
     
-    st.image(anh_bytes, caption="Xem trước ảnh hóa đơn", use_container_width=True)
+    # Hiển thị ảnh trực tiếp to rõ lên web
+    st.image(anh_bytes, caption="Ảnh hóa đơn được tạo tự động (Rõ nét, không cần vuốt)", use_container_width=True)
     
+    # Nút bấm tải ảnh về máy
     st.download_button(
         label="📥 TẢI ẢNH HÓA ĐƠN VỀ MÁY",
         data=anh_bytes,
