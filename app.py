@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
@@ -33,60 +34,37 @@ danh_sach = [
 ]
 
 # Xử lý tính toán và lọc bỏ món số lượng = 0
-hoa_don_chi_tiet = []
+data_rows = []
 tong_cong = 0
 
 for ten, sl, dg in danh_sach:
     if sl > 0:
         thanh_tien = sl * dg
         tong_cong += thanh_tien
-        hoa_don_chi_tiet.append((ten, sl, dg, thanh_tien))
+        data_rows.append({
+            "Tên bánh": ten,
+            "SL (kg)": sl,
+            "Đơn giá": f"{dg:,.0f} đ",
+            "Thành tiền": f"{thanh_tien:,.0f} đ"
+        })
 
 st.markdown("---")
 st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 
-if not hoa_don_chi_tiet:
+if not data_rows:
     st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị!")
 else:
     # Ngày lập hóa đơn nằm sát ngay phía trên bảng
     st.markdown(f"<p style='margin-bottom: 5px; color: #555;'>📅 Ngày lập hóa đơn: <b>{ngay}</b></p>", unsafe_allow_html=True)
     
-    # Dùng bảng HTML có khóa chống rớt dòng chữ (white-space: nowrap)
-    html_table = """
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; background-color: #fff; border: 1px solid #ddd;">
-            <thead>
-                <tr style="background-color: #bc6c25; color: white; text-align: left;">
-                    <th style="padding: 10px; border: 1px solid #ddd;">Tên bánh</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center; white-space: nowrap;">SL (kg)</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right; white-space: nowrap;">Đơn giá</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right; white-space: nowrap;">Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
+    # Thêm dòng tổng cộng vào cuối bảng
+    data_rows.append({
+        "Tên bánh": "TỔNG CỘNG",
+        "SL (kg)": "-",
+        "Đơn giá": "-",
+        "Thành tiền": f"{tong_cong:,.0f} VNĐ"
+    })
     
-    for ten, sl, dg, tt in hoa_don_chi_tiet:
-        html_table += f"""
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #333;">{ten}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #555; white-space: nowrap;">{sl}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #555; white-space: nowrap;">{dg:,.0f} đ</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #283618; white-space: nowrap;">{tt:,.0f} đ</td>
-                </tr>
-        """
-        
-    # Gộp hàng tổng cộng vào ngay dòng cuối cùng của bảng
-    html_table += f"""
-                <tr style="background-color: #fefae0; font-weight: bold;">
-                    <td style="padding: 10px; border: 1px solid #ddd; color: #bc6c25;">TỔNG CỘNG</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">-</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">-</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #9b2226; white-space: nowrap;">{tong_cong:,.0f} VNĐ</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    """
-    
-    st.markdown(html_table, unsafe_allow_html=True)
+    # Sử dụng bảng chuẩn của Streamlit (bảo đảm sạch sẽ, hiển thị đẹp, không bao giờ lỗi code)
+    df = pd.DataFrame(data_rows)
+    st.table(df)
