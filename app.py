@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="wide")
+st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
 # Tiêu đề ứng dụng
 st.title("🛒 TIỆM BÁNH NHÀ DIEM")
@@ -43,54 +43,37 @@ for ten, sl, dg in danh_sach:
         tong_cong += thanh_tien
         hoa_don_chi_tiet.append((ten, sl, dg, thanh_tien))
 
-# --- MÀN HÌNH CHÍNH: HIỂN THỊ HÓA ĐƠN DẠNG THẺ (CARD) CÓ LOGO ---
-st.markdown("### 🧾 HÓA ĐƠN BÁN HÀNG (Tự động cập nhật)")
+# --- MÀN HÌNH CHÍNH: HIỂN THỊ HÓA ĐƠN DẠNG KHUNG SẠCH SẼ ---
+st.markdown("### 🧾 HÓA ĐƠN BÁN HÀNG")
 st.markdown("---")
 
 if not hoa_don_chi_tiet:
-    st.info("👈 Hãy chọn mở menu bên cạnh để nhập số lượng bánh, hóa đơn có logo sẽ hiện ra ngay tại đây!")
+    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, hóa đơn sẽ tự động hiển thị ngay tại đây!")
 else:
-    # Tạo giao diện thẻ hóa đơn chuyên nghiệp bằng HTML/CSS tích hợp sẵn trong Streamlit
-    html_hoa_don = f"""
-    <div style="background-color: #fdfbf7; border: 2px dashed #d4a373; padding: 20px; border-radius: 12px; font-family: sans-serif; color: #333; max-width: 500px; margin: auto;">
-        <div style="text-align: center;">
-            <span style="font-size: 40px;">🥐</span>
-            <h2 style="color: #bc6c25; margin: 5px 0;">TIỆM BÁNH NHÀ DIEM</h2>
-            <p style="font-size: 13px; color: #666; margin: 0;">Chuyên cung cấp các loại bánh bò truyền thống ngon sạch</p>
-            <hr style="border: 0; border-top: 1px solid #e0d0c0; margin: 15px 0;">
-            <p style="text-align: left; font-weight: bold; margin: 5px 0;">📅 Ngày: {ngay}</p>
-        </div>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
-            <tr style="border-bottom: 2px solid #ddd; text-align: left; color: #555;">
-                <th style="padding: 6px;">Món</th>
-                <th style="padding: 6px; text-align: center;">SL</th>
-                <th style="padding: 6px; text-align: right;">Thành tiền</th>
-            </tr>
-    """
-    
-    for ten, sl, dg, tt in hoa_don_chi_tiet:
-        html_hoa_don += f"""
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 8px 6px;"><b>{ten}</b><br><span style="font-size: 11px; color: #775;">({dg:,.0f} đ/kg)</span></td>
-                <td style="padding: 8px 6px; text-align: center;">{sl} kg</td>
-                <td style="padding: 8px 6px; text-align: right; font-weight: bold; color: #283618;">{tt:,.0f} đ</td>
-            </tr>
-        """
+    # Dùng khung viền tích hợp sẵn của Streamlit (bảo đảm không bao giờ lỗi code)
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align: center; color: #bc6c25;'>🥐 TIỆM BÁNH NHÀ DIEM</h3>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center; color: #666;'>Ngày: <b>{ngay}</b></p>", unsafe_allow_html=True)
+        st.markdown("---")
         
-    html_hoa_don += f"""
-        </table>
-        <hr style="border: 0; border-top: 2px solid #d4a373; margin: 15px 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 16px;">
-            <span style="font-weight: bold; color: #333;">TỔNG CỘNG:</span>
-            <span style="font-weight: bold; color: #9b2226; font-size: 18px;">{tong_cong:,.0f} VNĐ</span>
-        </div>
-        <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
-            <p>🙏 Cảm ơn quý khách và hẹn gặp lại! ❤️</p>
-        </div>
-    </div>
-    """
-    
-    # Hiển thị khung hóa đơn lên web
-    st.markdown(html_hoa_don, unsafe_allow_html=True)
-    
-    st.success("💡 Mẹo trên điện thoại: Bạn chỉ cần chụp màn hình khung hóa đơn màu kem phía trên là đã có ngay một bức ảnh hóa đơn kèm logo cực kỳ đẹp mắt để gửi Zalo cho khách!")
+        stt = 1
+        for ten, sl, dg, tt in hoa_don_chi_tiet:
+            col1, col2 = st.columns([3, 2])
+            with col1:
+                st.markdown(f"**{stt}. {ten}**")
+                st.caption(f"SL: {sl} kg | ĐG: {dg:,.0f}đ")
+            with col2:
+                st.markdown(f"<div style='text-align: right; font-weight: bold; color: #283618;'>{tt:,.0f} đ</div>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 5px 0; border-top: 1px dashed #eee;'>", unsafe_allow_html=True)
+            stt += 1
+            
+        st.markdown("---")
+        col_t1, col_t2 = st.columns([2, 3])
+        with col_t1:
+            st.markdown("#### **TỔNG CỘNG:**")
+        with col_t2:
+            st.markdown(f"<div style='text-align: right; font-size: 18px; font-weight: bold; color: #9b2226;'>{tong_cong:,.0f} VNĐ</div>", unsafe_allow_html=True)
+            
+        st.markdown("<p style='text-align: center; font-size: 12px; color: #888; margin-top: 15px;'>🙏 Cảm ơn quý khách và hẹn gặp lại! ❤️</p>", unsafe_allow_html=True)
+
+    st.success("💡 Bạn có thể chụp màn hình khung hóa đơn trên để gửi qua Zalo cho khách hàng cực kỳ chuyên nghiệp!")
