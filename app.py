@@ -1,6 +1,4 @@
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFont
-import io
 
 st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
@@ -45,66 +43,48 @@ for ten, sl, dg in danh_sach:
         hoa_don_chi_tiet.append((ten, sl, dg, thanh_tien))
 
 st.markdown("---")
+st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 
 if not hoa_don_chi_tiet:
-    st.info("👈 Hãy bấm mở menu bên cạnh để nhập số lượng bánh.")
+    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị ngay!")
 else:
-    st.markdown("### 📸 ẢNH HÓA ĐƠN SIÊU RÕ NÉT")
+    # Hiển thị thông tin ngày tháng
+    st.markdown(f"**Ngày lập hóa đơn:** {ngay}")
     
-    def tao_anh_hoa_don():
-        img_width = 750
-        img_height = 320 + (len(hoa_don_chi_tiet) * 85)
-        
-        img = Image.new('RGB', (img_width, img_height), color='#fdfbf7')
-        draw = ImageDraw.Draw(img)
-        
-        # Sử dụng font chữ chuẩn trên máy chủ web để chữ dày, to và cực kỳ sắc nét
-        try:
-            font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 32)
-            font_bold = ImageFont.truetype("DejaVuSans-Bold.ttf", 22)
-            font_normal = ImageFont.truetype("DejaVuSans.ttf", 20)
-        except:
-            try:
-                font_title = ImageFont.truetype("LiberationSans-Bold.ttf", 32)
-                font_bold = ImageFont.truetype("LiberationSans-Bold.ttf", 22)
-                font_normal = ImageFont.truetype("LiberationSans.ttf", 20)
-            except:
-                font_title = ImageFont.load_default()
-                font_bold = ImageFont.load_default()
-                font_normal = ImageFont.load_default()
-
-        # Vẽ tiêu đề
-        draw.text((200, 40), "TIỆM BÁNH NHÀ DIEM", fill="#bc6c25", font=font_title)
-        draw.text((275, 85), f"Ngày: {ngay}", fill="#444444", font=font_normal)
-        draw.line([(40, 125), (710, 125)], fill="#d4a373", width=3)
-        
-        y = 155
-        stt = 1
-        for ten, sl, dg, tt in hoa_don_chi_tiet:
-            draw.text((50, y), f"{stt}. {ten}", fill="#111111", font=font_bold)
-            draw.text((50, y + 32), f"   Số lượng: {sl} kg  x  {dg:,.0f} đ", fill="#555555", font=font_normal)
-            draw.text((500, y + 14), f"{tt:,.0f} đ", fill="#283618", font=font_bold)
-            y += 85
-            stt += 1
-            
-        draw.line([(40, y + 10), (710, y + 10)], fill="#d4a373", width=3)
-        draw.text((50, y + 35), "TỔNG CỘNG:", fill="#000000", font=font_title)
-        draw.text((450, y + 35), f"{tong_cong:,.0f} VNĐ", fill="#9b2226", font=font_title)
-        
-        draw.text((230, y + 115), "Cảm ơn quý khách và hẹn gặp lại! ❤️", fill="#666666", font=font_normal)
-        
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        return buf.getvalue()
-
-    anh_bytes = tao_anh_hoa_don()
+    # Tạo bảng ngang chuyên nghiệp bằng HTML thuần túy tối ưu cho màn hình di động
+    html_table = """
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; background-color: #fff; border: 1px solid #ddd;">
+            <thead>
+                <tr style="background-color: #bc6c25; color: white; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Tên bánh</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">SL (kg)</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Đơn giá</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+    """
     
-    st.image(anh_bytes, caption="Ảnh hóa đơn bản nét (To, rõ, đậm đà)", use_container_width=True)
+    for ten, sl, dg, tt in hoa_don_chi_tiet:
+        html_table += f"""
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #333;">{ten}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #555;">{sl}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #555;">{dg:,.0f} đ</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #283618;">{tt:,.0f} đ</td>
+                </tr>
+        """
+        
+    html_table += f"""
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top: 15px; padding: 12px; background-color: #fefae0; border: 1px solid #dda15e; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 16px; font-weight: bold; color: #333;">TỔNG CỘNG:</span>
+        <span style="font-size: 20px; font-weight: bold; color: #9b2226;">{tong_cong:,.0f} VNĐ</span>
+    </div>
+    """
     
-    st.download_button(
-        label="📥 TẢI ẢNH HÓA ĐƠN SẮC NÉT",
-        data=anh_bytes,
-        file_name=f"HoaDon_{ngay.replace('/', '-')}.png",
-        mime="image/png",
-        type="primary"
-    )
+    st.markdown(html_table, unsafe_allow_html=True)
+    st.success("💡 Bảng hóa đơn ngang hiển thị trực quan, các cột Tên, Số lượng, Đơn giá và Thành tiền được sắp xếp ngay ngắn, rõ ràng để bạn kiểm tra nhanh chóng!")
