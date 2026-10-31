@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
+st.set_page_config(page_title="Tiệm Bánh Nhà Diễm", page_icon="🥐", layout="centered")
 
-st.title("🛒 TIỆM BÁNH NHÀ DIEM")
+# --- HIỂN THỊ LOGO THƯƠNG HIỆU ---
+try:
+    st.image("logo.png", use_container_width=True)
+except:
+    st.title("🛒 TIỆM BÁNH NHÀ DIỄM")
 
 # --- NÚT "NHẬP THÔNG TIN" TO RÕ NGAY GIỮA MÀN HÌNH ---
 with st.popover("📝 NHẬP THÔNG TIN ĐƠN HÀNG", use_container_width=True):
