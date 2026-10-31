@@ -1,9 +1,10 @@
 import streamlit as st
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 st.set_page_config(page_title="Hóa Đơn Bán Hàng Nhà Diem", page_icon="🥐", layout="centered")
 
-# Tiêu đề ứng dụng
-st.title("🛒 TIỆM BÁNH NHÀ DIEM")
+st.title("🛒 TIỆM BÁNH NHÀ DIEM - XUẤT ẢNH HÓA ĐƠN")
 
 # --- THANH BÊN (SIDEBAR) ĐỂ NHẬP LIỆU ---
 st.sidebar.header("📝 Nhập thông tin đơn hàng")
@@ -43,39 +44,68 @@ for ten, sl, dg in danh_sach:
         tong_cong += thanh_tien
         hoa_don_chi_tiet.append((ten, sl, dg, thanh_tien))
 
-# --- MÀN HÌNH CHÍNH: HIỂN THỊ HÓA ĐƠN RÕ RÀNG, CỠ CHỮ TO ---
-st.markdown("### 🧾 HÓA ĐƠN BÁN HÀNG")
 st.markdown("---")
 
 if not hoa_don_chi_tiet:
-    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, hóa đơn sẽ tự động hiển thị ngay tại đây!")
+    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh.")
 else:
-    with st.container(border=True):
-        st.markdown("<h3 style='text-align: center; color: #bc6c25;'>🥐 TIỆM BÁNH NHÀ DIEM</h3>", unsafe_allow_html=True)
-        st.markdown(f"<p style='text-align: center; color: #666;'>Ngày: <b>{ngay}</b></p>", unsafe_allow_html=True)
-        st.markdown("---")
+    st.markdown("### 📸 TẠO VÀ TẢI ẢNH HÓA ĐƠN")
+    
+    # Hàm tự động vẽ ảnh hóa đơn
+    def tao_anh_hoa_don():
+        # Kích thước khung ảnh
+        img_width = 600
+        img_height = 250 + (len(hoa_don_chi_tiet) * 50)
         
+        # Tạo ảnh nền màu kem sáng
+        img = Image.new('RGB', (img_width, img_height), color='#fdfbf7')
+        draw = ImageDraw.Draw(img)
+        
+        # Sử dụng font mặc định hệ thống (hoặc có thể dùng font chữ cơ bản)
+        try:
+            font_title = ImageFont.truetype("arial.ttf", 22)
+            font_bold = ImageFont.truetype("arial.ttf", 16)
+            font_normal = ImageFont.truetype("arial.ttf", 15)
+        except:
+            font_title = ImageFont.load_default()
+            font_bold = ImageFont.load_default()
+            font_normal = ImageFont.load_default()
+
+        # Vẽ nội dung lên ảnh
+        draw.text((200, 30), "TIỆM BÁNH NHÀ DIEM", fill="#bc6c25", font=font_title)
+        draw.text((230, 65), f"Ngày: {ngay}", fill="#666666", font=font_normal)
+        draw.line([(30, 95), (570, 95)], fill="#d4a373", width=2)
+        
+        y = 120
         stt = 1
         for ten, sl, dg, tt in hoa_don_chi_tiet:
-            # Tăng kích thước chữ cho số lượng và thành tiền hiển thị to rõ nổi bật
-            st.markdown(f"#### **{stt}. {ten}**")
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                st.markdown(f"<span style='font-size: 16px; color: #333;'>📦 SL: <b>{sl} kg</b></span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size: 13px; color: #666;'>ĐG: {dg:,.0f} đ</span>", unsafe_allow_html=True)
-            with col2:
-                st.markdown(f"<div style='text-align: right; font-size: 18px; font-weight: bold; color: #283618;'>{tt:,.0f} đ</div>", unsafe_allow_html=True)
-            
-            st.markdown("<hr style='margin: 8px 0; border-top: 1px dashed #ddd;'>", unsafe_allow_html=True)
+            draw.text((40, y), f"{stt}. {ten}", fill="#222222", font=font_bold)
+            draw.text((40, y + 22), f"   SL: {sl} kg x {dg:,.0f}đ", fill="#666666", font=font_normal)
+            draw.text((420, y + 10), f"{tt:,.0f} đ", fill="#283618", font=font_bold)
+            y += 55
             stt += 1
             
-        st.markdown("---")
-        col_t1, col_t2 = st.columns([1, 1])
-        with col_t1:
-            st.markdown("#### **TỔNG CỘNG:**")
-        with col_t2:
-            st.markdown(f"<div style='text-align: right; font-size: 20px; font-weight: bold; color: #9b2226;'>{tong_cong:,.0f} VNĐ</div>", unsafe_allow_html=True)
-            
-        st.markdown("<p style='text-align: center; font-size: 12px; color: #888; margin-top: 15px;'>🙏 Cảm ơn quý khách và hẹn gặp lại! ❤️</p>", unsafe_allow_html=True)
+        draw.line([(30, y + 10), (570, y + 10)], fill="#d4a373", width=2)
+        draw.text((40, y + 30), "TỔNG CỘNG:", fill="#000000", font=font_title)
+        draw.text((380, y + 30), f"{tong_cong:,.0f} VNĐ", fill="#9b2226", font=font_title)
+        
+        draw.text((180, y + 85), "Cảm ơn quý khách và hẹn gặp lại! ❤️", fill="#888888", font=font_normal)
+        
+        # Lưu vào bộ nhớ đệm dạng bytes để tải về
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        byte_im = buf.getvalue()
+        return byte_im
 
-    st.success("💡 Bạn có thể chụp màn hình khung hóa đơn phía trên để gửi cho khách hàng cực kỳ rõ nét!")
+    # Nút bấm tạo ảnh và tải về
+    anh_bytes = tao_anh_hoa_don()
+    
+    st.image(anh_bytes, caption="Xem trước ảnh hóa đơn", use_container_width=True)
+    
+    st.download_button(
+        label="📥 TẢI ẢNH HÓA ĐƠN VỀ MÁY",
+        data=anh_bytes,
+        file_name=f"HoaDon_{ngay.replace('/', '-')}.png",
+        mime="image/png",
+        type="primary"
+    )
