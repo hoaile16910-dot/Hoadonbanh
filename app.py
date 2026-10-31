@@ -46,45 +46,19 @@ st.markdown("---")
 st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 
 if not hoa_don_chi_tiet:
-    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị ngay!")
+    st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị!")
 else:
-    # Hiển thị thông tin ngày tháng
     st.markdown(f"**Ngày lập hóa đơn:** {ngay}")
+    st.markdown("---")
     
-    # Tạo bảng ngang chuyên nghiệp bằng HTML thuần túy tối ưu cho màn hình di động
-    html_table = """
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; background-color: #fff; border: 1px solid #ddd;">
-            <thead>
-                <tr style="background-color: #bc6c25; color: white; text-align: left;">
-                    <th style="padding: 10px; border: 1px solid #ddd;">Tên bánh</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">SL (kg)</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Đơn giá</th>
-                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
+    # Tạo bảng ngang bằng cú pháp chuẩn của Streamlit (Đảm bảo chạy mượt, không bao giờ lỗi code)
+    markdown_table = "| Tên bánh | SL (kg) | Đơn giá | Thành tiền |\n"
+    markdown_table += "| :--- | :---: | ---: | ---: |\n"
     
     for ten, sl, dg, tt in hoa_don_chi_tiet:
-        html_table += f"""
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #333;">{ten}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #555;">{sl}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #555;">{dg:,.0f} đ</td>
-                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #283618;">{tt:,.0f} đ</td>
-                </tr>
-        """
+        markdown_table += f"| **{ten}** | {sl} | {dg:,.0f} đ | **{tt:,.0f} đ** |\n"
         
-    html_table += f"""
-            </tbody>
-        </table>
-    </div>
-    <div style="margin-top: 15px; padding: 12px; background-color: #fefae0; border: 1px solid #dda15e; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 16px; font-weight: bold; color: #333;">TỔNG CỘNG:</span>
-        <span style="font-size: 20px; font-weight: bold; color: #9b2226;">{tong_cong:,.0f} VNĐ</span>
-    </div>
-    """
+    st.markdown(markdown_table)
     
-    st.markdown(html_table, unsafe_allow_html=True)
-    st.success("💡 Bảng hóa đơn ngang hiển thị trực quan, các cột Tên, Số lượng, Đơn giá và Thành tiền được sắp xếp ngay ngắn, rõ ràng để bạn kiểm tra nhanh chóng!")
+    st.markdown("---")
+    st.markdown(f"### 💰 TỔNG CỘNG: {tong_cong:,.0f} VNĐ")
