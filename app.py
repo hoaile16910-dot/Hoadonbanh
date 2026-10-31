@@ -5,7 +5,7 @@ st.set_page_config(page_title="Tiệm Bánh Nhà Diễm", page_icon="🥐", layo
 
 # --- HIỂN THỊ LOGO THƯƠNG HIỆU ---
 try:
-    st.image("logo.png", use_container_width=True)
+    st.image("IMG_1931.png", use_container_width=True)
 except:
     st.title("🛒 TIỆM BÁNH NHÀ DIỄM")
 
