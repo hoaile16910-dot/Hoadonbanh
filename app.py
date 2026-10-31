@@ -48,17 +48,17 @@ st.markdown("### 🧾 BẢNG HÓA ĐƠN CHI TIẾT")
 if not hoa_don_chi_tiet:
     st.info("👈 Hãy mở menu bên cạnh để nhập số lượng bánh, bảng hóa đơn sẽ tự động hiển thị!")
 else:
-    st.markdown(f"**Ngày lập hóa đơn:** {ngay}")
-    st.markdown("---")
+    # Gom ngày tháng xuống sát ngay phía trên bảng cho gọn gàng
+    st.markdown(f"<p style='margin-bottom: 5px; color: #555;'>📅 Ngày lập hóa đơn: <b>{ngay}</b></p>", unsafe_allow_html=True)
     
-    # Tạo bảng ngang bằng cú pháp chuẩn của Streamlit (Đảm bảo chạy mượt, không bao giờ lỗi code)
+    # Tạo bảng ngang chuẩn Markdown có sẵn dòng tổng cộng gộp phía dưới
     markdown_table = "| Tên bánh | SL (kg) | Đơn giá | Thành tiền |\n"
     markdown_table += "| :--- | :---: | ---: | ---: |\n"
     
     for ten, sl, dg, tt in hoa_don_chi_tiet:
-        markdown_table += f"| **{ten}** | {sl} | {dg:,.0f} đ | **{tt:,.0f} đ** |\n"
+        markdown_table += f"| **{ten}** | {sl} | {dg:,.0f} đ | {tt:,.0f} đ |\n"
+        
+    # Gộp hàng tổng cộng vào ngay trong bảng
+    markdown_table += f"| **TỔNG CỘNG** | - | - | **{tong_cong:,.0f} VNĐ** |"
         
     st.markdown(markdown_table)
-    
-    st.markdown("---")
-    st.markdown(f"### 💰 TỔNG CỘNG: {tong_cong:,.0f} VNĐ")
